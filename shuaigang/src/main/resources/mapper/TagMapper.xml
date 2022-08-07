@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.TagMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Tag">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="deleted" property="deleted" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+    </resultMap>
+
+    <select id="getAllTag" resultType="com.gsg.commons.vo.TagVO">
+        select
+            id,
+            name,
+            deleted,
+            gmt_create AS gmtCreate,
+            gmt_modified AS gmtModified
+        FROM
+            tag
+        WHERE
+            deleted = 0
+    </select>
+
+    <select id="getAllBackendTag" resultType="com.gsg.commons.vo.TagVO">
+        select
+            t.id,
+            t.name,
+            t.deleted,
+            t.gmt_create AS gmtCreate,
+            t.gmt_modified AS gmtModified
+        FROM
+            tag t
+        <if test='fuzzySearch != null and fuzzySearch != ""'>
+            WHERE
+                t.name like concat('%', #{fuzzySearch}, '%')
+        </if>
+    </select>
+
+</mapper>

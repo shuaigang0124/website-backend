@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.UserKudosMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.UserKudos">
+        <result column="user_id" property="userId" />
+        <result column="service_id" property="serviceId" />
+        <result column="deleted" property="deleted" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+    </resultMap>
+
+    <update id="deleteByUserIdAndServiceId">
+        update
+            user_kudos
+        SET
+            deleted = 1,
+            gmt_modified = sysdate()
+        WHERE
+            user_id = #{userId}
+        AND
+            service_id = #{serviceId}
+    </update>
+
+    <update id="updateByUserIdAndServiceId">
+        update
+            user_kudos
+        SET
+            deleted = 0,
+            gmt_modified = sysdate()
+        WHERE
+            user_id = #{userId}
+        AND
+            service_id = #{serviceId}
+    </update>
+
+    <select id="findByUserIdAndServiceId" resultType="java.lang.Integer">
+        SELECT
+            deleted
+        FROM
+            user_kudos
+        WHERE
+            user_id = #{userId}
+          AND
+            service_id = #{serviceId}
+    </select>
+
+
+</mapper>

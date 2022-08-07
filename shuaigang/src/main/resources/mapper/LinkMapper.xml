@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.LinkMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Link">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="url" property="url" />
+        <result column="type" property="type" />
+    </resultMap>
+
+    <delete id="deletelink">
+        DELETE FROM
+        link
+        WHERE
+        id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getLink" resultType="com.gsg.commons.vo.LinkVO">
+        SELECT
+            l.id,
+            l.name,
+            l.url,
+            l.type
+        FROM
+            link l
+        <if test='fuzzySearch != null and fuzzySearch != ""'>
+            WHERE (
+                l.name like concat('%', #{fuzzySearch}, '%')
+            OR
+                l.url like concat('%', #{fuzzySearch}, '%')
+            )
+        </if>
+    </select>
+
+</mapper>

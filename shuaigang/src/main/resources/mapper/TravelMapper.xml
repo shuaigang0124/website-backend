@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.TravelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Travel">
+        <id column="id" property="id" />
+        <result column="city_id" property="cityId" />
+        <result column="day_time" property="dayTime" />
+        <result column="content" property="content" />
+    </resultMap>
+
+    <delete id="deleteTravel">
+        DELETE FROM
+            travel
+        WHERE
+        id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getTravel" resultType="com.gsg.commons.vo.TravelVO">
+        SELECT
+            id,
+            city_id,
+            day_time,
+            content
+        FROM
+            travel
+        <if test='fuzzySearch != null and fuzzySearch != ""'>
+            WHERE (
+            city_id like concat('%', #{fuzzySearch}, '%')
+            OR
+            day_time like concat('%', #{fuzzySearch}, '%')
+            OR
+            content like concat('%', #{fuzzySearch}, '%')
+            )
+        </if>
+        ORDER BY day_time
+    </select>
+
+</mapper>

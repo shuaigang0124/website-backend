@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.ForRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.ForRecord">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="trade_id" property="tradeId" />
+        <result column="sub_num" property="subNum" />
+        <result column="convert_status" property="convertStatus" />
+        <result column="gmt_create" property="gmtCreate" />
+    </resultMap>
+
+    <select id="getRecord" resultType="com.gsg.commons.model.ForRecord">
+        SELECT
+            *
+        FROM
+            for_record
+        WHERE
+            trade_id = #{tradeId}
+        AND convert_status = #{convertStatus}
+    </select>
+    <select id="getForRecrdList" resultType="com.gsg.commons.vo.ForRecordVO">
+        SELECT
+            fr.id,
+            fr.user_id,
+            fr.trade_id,
+            fr.sub_num,
+            fr.convert_status,
+            fr.gmt_create,
+            u.user_name,
+            m.trade_name
+        FROM
+            for_record fr
+        left join user u on u.id = fr.user_id
+        left join mall m on m.id = fr.trade_id
+        <where>
+            <if test='userId != null and userId != "" '>
+                AND fr.user_id = #{userId}
+            </if>
+            <if test='tradeUserId != null and tradeUserId != "" '>
+                AND m.user_id = #{tradeUserId}
+            </if>
+        </where>
+        ORDER BY fr.gmt_create desc
+    </select>
+
+    <select id="getStatusById" resultType="java.lang.Integer">
+        SELECT
+            convert_status
+        FROM
+            for_record
+        WHERE
+            id = #{id}
+    </select>
+
+</mapper>

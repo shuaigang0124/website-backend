@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.MallMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Mall">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="type_id" property="typeId" />
+        <result column="trade_name" property="tradeName" />
+        <result column="point_num" property="pointNum" />
+        <result column="trade_img" property="tradeImg" />
+        <result column="trade_num" property="tradeNum" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <select id="getMallTrade" resultType="com.gsg.commons.vo.MallTradeVO">
+        SELECT
+            m.id,
+            m.user_id,
+            m.type_id,
+            m.trade_name,
+            m.point_num,
+            m.trade_img,
+            m.trade_num,
+            u.user_name
+        FROM
+            mall m
+        left join user u on u.id = m.user_id
+        WHERE
+            m.deleted = 0
+            <if test="typeId != null">
+                AND m.type_id = #{typeId}
+            </if>
+        ORDER BY m.gmt_create desc
+    </select>
+
+    <select id="getTradeNumById" resultType="java.lang.Integer">
+        SELECT
+            trade_num
+        FROM
+            mall
+        WHERE
+            id = #{id}
+    </select>
+
+    <select id="getMallTradeListByPage" resultType="com.gsg.commons.vo.MallTradeVO">
+        SELECT
+            m.id,
+            m.user_id,
+            m.type_id,
+            m.trade_name,
+            m.point_num,
+            m.trade_img,
+            m.trade_num,
+            u.user_name
+        FROM
+            mall m
+        left join user u on u.id = m.user_id
+        WHERE
+            m.deleted = 0
+        <if test="entity.typeId != null and entity.typeId != 0">
+            AND m.type_id = #{entity.typeId}
+        </if>
+        ORDER BY m.gmt_create desc
+    </select>
+
+    <select id="getMallTradeListTotal" resultType="java.lang.Long">
+        SELECT
+            count(1)
+        FROM
+            mall
+        WHERE
+            deleted = 0
+        <if test="typeId != null and typeId != 0">
+            AND type_id = #{typeId}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.YearPlanMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.YearPlan">
+        <id column="id" property="id" />
+        <result column="year_id" property="yearId" />
+        <result column="plan" property="plan" />
+        <result column="is_enabled" property="isEnabled" />
+    </resultMap>
+
+    <delete id="deleteYearPlan">
+        DELETE FROM
+            year_plan
+        WHERE
+        id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getYearPlanList" resultType="com.gsg.commons.vo.YearPlanVO">
+        SELECT
+            id,
+            year_id,
+            plan,
+            is_enabled
+        FROM
+            year_plan
+        <if test='fuzzySearch != null and fuzzySearch != ""'>
+            WHERE (
+                year_id like concat('%', #{fuzzySearch}, '%')
+            OR
+                plan like concat('%', #{fuzzySearch}, '%')
+            OR
+                is_enabled like concat('%', #{fuzzySearch}, '%'))
+        </if>
+    </select>
+
+</mapper>

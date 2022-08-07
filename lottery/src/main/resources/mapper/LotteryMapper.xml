@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.LotteryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Lottery">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="activity_num" property="activityNum" />
+        <result column="winning" property="winning" />
+        <result column="gmt_create" property="gmtCreate" />
+    </resultMap>
+
+    <select id="getAllLottery" resultType="com.gsg.commons.model.Lottery" parameterType="java.lang.Integer">
+        SELECT
+            id
+        FROM
+            lottery
+        WHERE
+            activity_num = #{activityNum}
+        AND
+            winning = 0
+    </select>
+
+    <select id="getWinnerById" resultType="com.gsg.commons.vo.WinnerVO" parameterType="java.lang.String">
+        SELECT
+            l.id,
+            l.user_id,
+            u.user_name,
+            u.email
+        FROM
+            lottery l
+        left join user u on u.id = l.user_id
+        WHERE
+            l.id = #{winnerId}
+    </select>
+
+    <select id="checkUserJoin" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            lottery
+        WHERE
+            user_id = #{userId}
+        AND activity_num = #{activityNum}
+    </select>
+
+</mapper>

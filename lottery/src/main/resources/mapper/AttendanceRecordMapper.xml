@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.AttendanceRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.AttendanceRecord">
+        <result column="user_id" property="userId" />
+        <result column="day_time" property="dayTime" />
+        <result column="gmt_create" property="gmtCreate" />
+    </resultMap>
+
+    <select id="getUserAttendanceRecord" resultType="com.gsg.commons.vo.AttendanceRecordVO"
+            parameterType="com.gsg.commons.dto.AttendanceRecordDTO">
+        SELECT
+            user_id,
+            day_time
+        FROM
+            attendance_record
+        WHERE
+            user_id = #{userId}
+        <if test="dayTime != null and dayTime != ''">
+            AND day_time = #{dayTime}
+        </if>
+    </select>
+
+    <select id="getUserDay" resultType="com.gsg.commons.vo.AttendanceRecordVO"
+            parameterType="com.gsg.commons.dto.AttendanceRecordDTO">
+        SELECT
+            user_id,
+            day_time
+        FROM
+            attendance_record
+        WHERE
+            user_id = #{userId}
+        AND day_time = #{dayTime}
+    </select>
+
+</mapper>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.SharingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Sharing">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="tag_id" property="tagId" />
+        <result column="title" property="title" />
+        <result column="title_describe" property="titleDescribe" />
+        <result column="content" property="content" />
+        <result column="img" property="img" />
+        <result column="click_num" property="clickNum" />
+        <result column="read_num" property="readNum" />
+        <result column="deleted" property="deleted" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+    </resultMap>
+
+    <select id="getSharing" resultType="com.gsg.commons.vo.SharingVO" parameterType="java.lang.Integer">
+        SELECT
+            s.id,
+            s.user_id AS userId,
+            s.tag_id AS tagId,
+            s.title,
+            s.title_describe AS titleDescribe,
+            s.img,
+            s.click_num AS clickNum,
+            s.read_num AS readNum,
+            s.gmt_create AS gmtCreate,
+            u.user_name AS userName,
+            t.name AS tagName
+        FROM
+            sharing s
+            LEFT JOIN user u ON u.id = s.user_id
+            LEFT JOIN tag t ON t.id = s.tag_id
+        WHERE
+            s.deleted=0
+            <if test='entity.tagId != null and entity.tagId != ""'>
+                AND s.tag_id = #{entity.tagId}
+            </if>
+        ORDER BY
+            s.gmt_create DESC
+    </select>
+
+
+    <select id="getSharingByTag" resultType="com.gsg.commons.vo.SharingByTagVO">
+        SELECT
+            id,
+            title_describe AS titleDescribe
+        FROM
+            sharing
+        WHERE
+            deleted = 0
+        AND
+            id != #{sharingId}
+        AND
+            tag_id = #{tagId}
+        ORDER BY
+            gmt_create
+    </select>
+
+
+    <select id="getSharingDetail" resultType="com.gsg.commons.vo.SharingDetailVO">
+        SELECT
+        s.id,
+        s.user_id AS userId,
+        s.tag_id AS tagId,
+        s.title,
+        s.title_describe AS titleDescribe,
+        s.content,
+        s.click_num AS clickNum,
+        s.gmt_create AS gmtCreate,
+        u.user_name AS userName
+        FROM
+            sharing s
+            LEFT JOIN user u ON u.id = s.user_id
+        WHERE
+            s.deleted=0
+            AND s.id = #{id}
+    </select>
+
+    <select id="getCommentListTotal" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            sharing_comment
+        WHERE
+            deleted = 0
+          AND
+            sharing_id = #{sharingId}
+    </select>
+
+    <select id="getSharingListTotal" resultType="java.lang.Long">
+        SELECT
+            count(1)
+        FROM
+            sharing
+        WHERE
+            deleted = 0
+        <if test='fuzzySearch != null and fuzzySearch != ""'>
+            AND (
+            title like concat('%', #{fuzzySearch}, '%')
+            OR
+            title_describe like concat('%', #{fuzzySearch}, '%')
+            OR
+            content like concat('%', #{fuzzySearch}, '%')
+            )
+        </if>
+    </select>
+
+    <select id="getSharingListByPage" resultType="com.gsg.commons.vo.SharingBackendVO">
+        SELECT
+            id,
+            title,
+            title_describe AS titleDescribe,
+            content,
+            img,
+            gmt_modified AS gmtModified
+        FROM
+            sharing
+        WHERE
+            deleted = 0
+        <if test='entity.fuzzySearch != null and entity.fuzzySearch != ""'>
+            AND (
+            title like concat('%', #{entity.fuzzySearch}, '%')
+            OR title_describe like concat('%', #{entity.fuzzySearch}, '%')
+            OR content like concat('%', #{entity.fuzzySearch}, '%')
+            )
+        </if>
+    </select>
+
+    <select id="selectSharingImgPath" resultType="com.gsg.commons.model.Sharing"
+            parameterType="java.lang.String">
+        SELECT
+            img
+        FROM
+            sharing
+        WHERE
+            id = #{sharingId}
+    </select>
+
+
+</mapper>

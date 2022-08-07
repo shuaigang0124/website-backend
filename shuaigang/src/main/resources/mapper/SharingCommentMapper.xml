@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.SharingCommentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.SharingComment">
+        <id column="id" property="id" />
+        <result column="sharing_id" property="sharingId" />
+        <result column="user_id" property="userId" />
+        <result column="be_commented_user_id" property="beCommentedUserId" />
+        <result column="p_id" property="pId" />
+        <result column="level" property="level" />
+        <result column="content" property="content" />
+        <result column="click_num" property="clickNum" />
+        <result column="deleted" property="deleted" />
+        <result column="gmt_create" property="gmtCreate" />
+    </resultMap>
+
+    <select id="findPIdByCommentId" resultType="com.gsg.commons.model.SharingComment"
+            parameterType="java.lang.String">
+        SELECT
+            level,
+            p_id AS pId,
+            user_id
+        FROM
+            sharing_comment
+        WHERE
+            id = #{commentId}
+    </select>
+
+    <select id="findAllComment" resultType="com.gsg.commons.vo.CommentVO" parameterType="java.lang.Integer">
+        SELECT
+        sc.id,
+        sc.user_id AS userId,
+        sc.content,
+        sc.p_id AS pId,
+        sc.click_num AS clickNum,
+        sc.gmt_create,
+        sc.be_commented_user_id AS beCommentedUserId,
+        u.user_name AS userName,
+        u.avatar,
+        u2.user_name AS userNameByReply
+        FROM
+        sharing_comment sc
+        LEFT JOIN user u ON u.id = sc.user_id
+        LEFT JOIN user u2 ON u2.id = sc.be_commented_user_id
+        WHERE
+        sc.deleted=0
+        AND sc.sharing_id = #{sharingId}
+        <if test='level != null'>
+            AND sc.level = #{level}
+        </if>
+        ORDER BY
+        sc.gmt_create
+    </select>
+
+</mapper>

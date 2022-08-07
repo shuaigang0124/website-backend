@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.shuaigang.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.User">
+        <id column="id" property="id" />
+        <result column="user_name" property="userName" />
+        <result column="password" property="password" />
+        <result column="birthday" property="birthday" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="avatar" property="avatar" />
+        <result column="role" property="role" />
+        <result column="sex" property="sex" />
+        <result column="address" property="address" />
+        <result column="gmt_create" property="gmtCreate" />
+        <result column="gmt_modified" property="gmtModified" />
+    </resultMap>
+
+    <insert id="insertUser" parameterType="com.gsg.commons.dto.UserDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into user(
+            id,
+            user_name,
+            password,
+            birthday,
+            email,
+            phone,
+            avatar,
+            <if test="role != null and role != ''">role,</if>
+            sex,
+            address,
+            gmt_create,
+            gmt_modified
+        )values(
+            #{id},
+            #{userName},
+            #{password},
+            #{birthday},
+            #{email},
+            #{phone},
+            #{avatar},
+            <if test="role != null and role != ''">#{role},</if>
+            #{sex},
+            #{address},
+            #{gmtCreate},
+            #{gmtModified}
+            )
+    </insert>
+
+    <update id="updateAvatarPath">
+        UPDATE
+            user
+        SET
+            avatar = #{avatarPath}
+        WHERE
+            id = #{userId}
+    </update>
+
+    <update id="resetPwd" parameterType="com.gsg.commons.dto.UserDTO">
+        update user set password  = #{password} , gmt_modified = sysdate() where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateUserPassword" parameterType="java.lang.String">
+        update
+            user
+        set
+            password = #{password},
+            gmt_modified = sysdate()
+        WHERE
+            id = #{userId}
+    </update>
+
+    <update id="updatePwdByEmail" parameterType="java.lang.String">
+        update
+            user
+        set
+            password = #{password},
+            gmt_modified = sysdate()
+        WHERE
+            email = #{email}
+    </update>
+
+    <select id="getAllUser" resultType="com.gsg.commons.vo.UserVO">
+        SELECT
+            u.id,
+            u.user_name,
+            u.password,
+            u.birthday,
+            u.email,
+            u.phone,
+            u.avatar,
+            u.role,
+            u.sex,
+            u.address,
+            ci.city_name AS cityName
+        FROM
+            user u
+        left join city ci ON u.address = ci.id
+        <if test='userId != null'>
+            WHERE
+            u.id = #{userId}
+        </if>
+    </select>
+
+    <select id="getUserListTotal" resultType="java.lang.Long" parameterType="com.gsg.commons.dto.UserDTO">
+        SELECT
+            count(1)
+        FROM
+            user
+        <where>
+            <if test='sex != null'>
+                AND sex = #{sex},
+            </if>
+            <if test='fuzzySearch != null and fuzzySearch != ""'>
+                AND (
+                    user_name like concat('%', #{fuzzySearch}, '%')
+                OR
+                    email like concat('%', #{fuzzySearch}, '%')
+                OR
+                    phone like concat('%', #{fuzzySearch}, '%')
+                OR
+                    address like concat('%', #{fuzzySearch}, '%')
+                    )
+            </if>
+        </where>
+    </select>
+
+    <select id="getUserListByPage" resultType="com.gsg.commons.vo.UserVO">
+        SELECT
+            u.id,
+            u.user_name AS userName,
+            u.password,
+            u.birthday,
+            u.email,
+            u.phone,
+            u.avatar,
+            u.role,
+            u.sex,
+            u.address,
+            u.gmt_create AS gmtCreate,
+            u.gmt_modified AS gmtModified,
+            ci.city_name AS cityName
+        FROM
+            user u
+        left join city ci ON u.address = ci.id
+        <where>
+            <if test='entity.fuzzySearch != null and entity.fuzzySearch != ""'>
+                AND (
+                user_name like concat('%', #{entity.fuzzySearch}, '%')
+                OR
+                email like concat('%', #{entity.fuzzySearch}, '%')
+                OR
+                phone like concat('%', #{entity.fuzzySearch}, '%')
+                OR
+                address like concat('%', #{entity.fuzzySearch}, '%')
+                )
+            </if>
+        </where>
+        ORDER BY
+            u.id
+    </select>
+
+    <delete id="deleteUser" parameterType="java.lang.Integer">
+        DELETE FROM
+        user
+        WHERE
+        id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--  根据条件查询对应的用户信息（内部使用）  -->
+    <select id="getUserByCondition" resultType="com.gsg.commons.model.User">
+        select
+            u.id,
+            u.user_name,
+            u.password,
+            u.birthday,
+            u.email,
+            u.phone,
+            u.avatar,
+            u.role,
+            u.sex,
+            u.address
+        FROM
+            user u
+        <where>
+            <if test='userName != null and userName != ""'>
+                u.user_name = #{userName}
+            </if>
+            <if test='id != null and id != ""'>
+                u.id = #{id}
+            </if>
+            <if test='phone!= null and phone!= ""'>
+                u.phone = #{phone}
+            </if>
+            <if test='email != null and email != ""'>
+                u.email = #{email}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- 校验用户名称是否唯一 -->
+    <select id="checkUserNameUnique" resultType="com.gsg.commons.model.User">
+        select id, user_name from user where user_name = #{userName} limit 1
+    </select>
+    <!-- 校验手机号码是否唯一 -->
+    <select id="checkPhoneUnique" resultType="com.gsg.commons.model.User">
+        select id, phone from user where phone = #{phone}  limit 1
+    </select>
+    <!-- 校验email是否唯一 -->
+    <select id="checkEmailUnique" resultType="com.gsg.commons.model.User">
+        select id, email from user where email = #{email} limit 1
+    </select>
+
+    <select id="selectUserAvatarPath" resultType="com.gsg.commons.model.User" parameterType="java.lang.String">
+        SELECT
+            avatar
+        FROM
+            user
+        WHERE
+            id = #{userId}
+    </select>
+
+    <select id="selectUserPasswordById" resultType="java.lang.String" parameterType="java.lang.String">
+        select
+            password
+        from
+            user
+        where
+            id = #{userId}
+    </select>
+
+
+</mapper>

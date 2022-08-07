@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.ActivityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.Activity">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="part_point" property="partPoint" />
+        <result column="people_num" property="peopleNum" />
+        <result column="activity_name" property="activityName" />
+        <result column="prize_img" property="prizeImg" />
+        <result column="prize_name" property="prizeName" />
+        <result column="prize_user_id" property="prizeUserId" />
+        <result column="is_enabled" property="isEnabled" />
+        <result column="gmt_time" property="gmtTime" />
+        <result column="gmt_create" property="gmtCreate" />
+    </resultMap>
+
+    <select id="getActivity" resultType="com.gsg.commons.vo.ActivityVO" parameterType="java.lang.Integer">
+        SELECT
+            a.id,
+            a.user_id,
+            a.part_point,
+            a.people_num,
+            a.activity_name,
+            a.prize_name,
+            a.prize_img,
+            a.prize_user_id,
+            a.is_enabled,
+            a.gmt_time,
+            u1.user_name AS reUserName,
+            u1.avatar AS reUserAvatar,
+            u2.user_name AS prizeUserName
+        FROM
+            activity a
+        left join user u1 on u1.id = a.user_id
+        left join user u2 on u2.id = a.prize_user_id
+        <where>
+            <if test='isEnabled != null'>
+                and a.is_enabled = #{isEnabled}
+            </if>
+            <if test='prizeUserId != null and prizeUserId != ""'>
+                and a.prize_user_id = #{prizeUserId}
+            </if>
+            <if test='userId != null and userId != ""'>
+                and a.user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY
+            a.is_enabled ASC, a.gmt_create DESC
+    </select>
+
+    <select id="getActivityById" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT
+            people_num
+        FROM
+            activity
+        WHERE
+            id = #{activityNum}
+    </select>
+
+</mapper>

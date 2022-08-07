@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gsg.lottery.mapper.UserPointsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gsg.commons.model.UserPoints">
+        <result column="user_id" property="userId" />
+        <result column="point" property="point" />
+    </resultMap>
+
+    <update id="updateUserPiont">
+        UPDATE
+            user_points
+        SET
+            point = #{pointNum}
+        WHERE
+            user_id=#{userId}
+    </update>
+
+    <select id="getUserPoint" resultType="com.gsg.commons.vo.UserPointsVO" parameterType="java.lang.String">
+        SELECT
+            u.user_name,
+            up.point
+        FROM
+            user_points up
+        left join user u on u.id = up.user_id
+        WHERE
+            up.user_id = #{userId}
+    </select>
+
+</mapper>
