@@ -1,6 +1,6 @@
 # website-backend
 
-com.gsg     
+com.gsg
 ├── commons               // 公共模块
 ├── customer              // 发送邮箱，rabbitmq消息发送模块 [8089]
 ├── generator             // mybatis-Plus代码生成器
