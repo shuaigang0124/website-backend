@@ -1,14 +1,6 @@
 # website-backend
 
-com.gsg
-├── commons               // 公共模块
-├── customer              // 发送邮箱，rabbitmq消息发送模块 [8089]
-├── generator             // mybatis-Plus代码生成器
-├── lottery               // 抽奖、积分商城模块  [9100]
-├── server                // Erake注册中心 [8761]
-├── shuaigang             // 后台配置模块 [8088]
-├── zuul                  // 网关、权限认证模块 [8090]
-├── pom.xml               // 公共依赖
+![image](https://user-images.githubusercontent.com/71113862/190584677-adc9c8f2-d4b6-42db-b099-db5c2a06b24a.png)
 
 项目环境准备：
 JDK11、Redis、RabbitMQ、Mysql...
